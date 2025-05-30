@@ -36,8 +36,7 @@ class OrderController:
                 )
             )
         return result
-        # return [OrderResponse(order.)for order in orders]
-
+        
     @staticmethod
     async def get_order_by_id(*, session: AsyncSession, order_id: int):
         """Get an order by ID"""
@@ -52,17 +51,27 @@ class OrderController:
     @staticmethod
     async def create_order(*, session: AsyncSession, order: OrderCreate):
         """Create a new Order"""
-        db_order = Order.model_validate(order)
-        client = await session.get(Client, order.client_id)
-        if not client:
-            raise HTTPException(status_code=404, detail="Client not found")
-        service = await session.get(Service, order.service_id)
-        if not service:
-            raise HTTPException(status_code=404, detail="Service not found")
-        session.add(db_order)
-        await session.commit()
-        await session.refresh(db_order)
-        return OrderResponse.model_validate(db_order)
+        try:
+            db_order = Order.model_validate(order)
+            print(db_order)
+            print(type(db_order))
+            client = await session.get(Client, order.client_id)
+            if not client:
+                raise HTTPException(status_code=404, detail="Client not found")
+            service = await session.get(Service, order.service_id)
+            if not service:
+                raise HTTPException(
+                    status_code=404, detail="Service not found")
+            session.add(db_order)
+            await session.commit()
+            await session.refresh(db_order)
+            ne_ord = OrderResponse.model_dump(db_order)
+            print(ne_ord)
+            print(type(ne_ord))
+            print(type(ne_ord))
+            return ne_ord
+        except Exception as e:
+            return e
 
     @staticmethod
     async def order_update(*, session: AsyncSession, order_id: int, order: OrderUpdate):

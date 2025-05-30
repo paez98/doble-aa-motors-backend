@@ -4,16 +4,15 @@ from app.config.database import get_async_session
 from app.schemas.client_schema import ClientCreate, ClientUpdate, ClientResponse
 from app.controllers.client_controller import ClientController
 
-
 client_router = APIRouter()
 
 
 @client_router.get("/", response_model=list[ClientResponse])
 async def get_client(
-    *,
-    session: AsyncSession = Depends(get_async_session),
-    offset: int = 0,
-    limit: int = 100,
+        *,
+        session: AsyncSession = Depends(get_async_session),
+        offset: int = 0,
+        limit: int = 100,
 ):
     """
     Get all clients.
@@ -21,12 +20,13 @@ async def get_client(
     clients = await ClientController.get_client(
         session=session, offset=offset, limit=limit
     )
-    return [client for client in clients]
+    # clients_list =
+    return [client.model_dump() for client in clients]
 
 
 @client_router.get("/{client_id}", response_model=ClientResponse)
 async def get_client_by_id(
-    *, session: AsyncSession = Depends(get_async_session), client_id: int
+        *, session: AsyncSession = Depends(get_async_session), client_id: int
 ):
     """
     Get a client by ID.
@@ -44,9 +44,9 @@ async def get_client_by_id(
     "/", response_model=ClientResponse, status_code=status.HTTP_201_CREATED
 )
 async def create_client(
-    *,
-    client: ClientCreate,
-    session: AsyncSession = Depends(get_async_session),
+        *,
+        client: ClientCreate,
+        session: AsyncSession = Depends(get_async_session),
 ):
     """
     Create a new client.
@@ -58,10 +58,10 @@ async def create_client(
 
 @client_router.patch("/{client_id}", response_model=ClientResponse)
 async def update_client(
-    *,
-    client_id: int,
-    client: ClientUpdate,
-    session: AsyncSession = Depends(get_async_session),
+        *,
+        client_id: int,
+        client: ClientUpdate,
+        session: AsyncSession = Depends(get_async_session),
 ):
     """
     Update a client.
@@ -78,7 +78,7 @@ async def update_client(
 
 @client_router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_client(
-    *, client_id: int, session: AsyncSession = Depends(get_async_session)
+        *, client_id: int, session: AsyncSession = Depends(get_async_session)
 ):
     """
     Delete a client.
